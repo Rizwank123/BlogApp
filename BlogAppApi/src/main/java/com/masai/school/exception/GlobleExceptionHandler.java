@@ -1,6 +1,8 @@
 package com.masai.school.exception;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.masai.school.payload.ApiResponse;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 
@@ -37,15 +40,25 @@ public class GlobleExceptionHandler {
 		
 		return new ResponseEntity<Map<String,String>>(errRsp,HttpStatus.BAD_REQUEST);
 	}
+//	@ExceptionHandler(ConstraintViolationException.class)
+//	public ResponseEntity<Map<String,String>> constraintViolationException (ConstraintViolationException ex){
+//		Map<String,String> errRsp=new HashMap<>();
+//		 ex.getConstraintViolations().forEach((error)->{
+//			String fieldName=((FieldError)error).getField();
+//			String errMsg=error.getMessage();
+//			errRsp.put(fieldName, errMsg);
+//		});
+//		
+//		return new ResponseEntity<Map<String,String>>(errRsp,HttpStatus.BAD_REQUEST);
+//	}
+	
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<Map<String,String>> constraintViolationException (ConstraintViolationException ex){
-		Map<String,String> errRsp=new HashMap<>();
-		 ex.getConstraintViolations().forEach((error)->{
-			String fieldName=((FieldError)error).getField();
-			String errMsg=error.getMessage();
-			errRsp.put(fieldName, errMsg);
-		});
-		
-		return new ResponseEntity<Map<String,String>>(errRsp,HttpStatus.BAD_REQUEST);
-	}
+    public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        List<String> errors = new ArrayList<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            errors.add(violation.getMessage());
+        }
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+        
 }

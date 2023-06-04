@@ -33,7 +33,7 @@ public class Category {
 	@Size(min=4)
 	private String categoryTitle;
 	@NotEmpty
-	@Size(min=100)
+	@Size(min=10)
 	private String categoryDescription;
 	
 	@OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
