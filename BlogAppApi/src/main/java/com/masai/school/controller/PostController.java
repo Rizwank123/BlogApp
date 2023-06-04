@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.masai.school.entities.Post;
 import com.masai.school.payload.ApiResponse;
 import com.masai.school.payload.PostDto;
+import com.masai.school.payload.PostResponse;
 import com.masai.school.service.PostService;
 
 import jakarta.validation.Valid;
@@ -35,25 +38,34 @@ public class PostController {
 	}
 	//find by users 
 	@GetMapping("/user/{userId}/posts")
-	public ResponseEntity<List<PostDto> >getPostByUser(@PathVariable Integer userId){
-		List<PostDto> posts=postService.getPostByUserId(userId);
+	public ResponseEntity<PostResponse >getPostByUser(@PathVariable Integer userId,
+			@RequestParam(value="pageNumber", defaultValue = "0",required = false) Integer pageNumber,
+			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize
+			){
+		PostResponse posts=postService.getPostByUserId(userId ,pageNumber,pageSize);
 		return new ResponseEntity<>(posts,HttpStatus.OK);
 	}
 	
 	//find by category
 	
 	@GetMapping("/category/{categoryId}/posts")
-	public ResponseEntity<List<PostDto> >getPostByCategory(@PathVariable Integer categoryId){
-		List<PostDto> posts=postService.getPostByCategory(categoryId);
+	public ResponseEntity<PostResponse >getPostByCategory(@PathVariable Integer categoryId,
+			@RequestParam(value="pageNumber",defaultValue = "0",required = false) Integer pageNumber,
+			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize
+			){
+		PostResponse posts=postService.getPostByCategory(categoryId, pageNumber,pageSize);
 		return new ResponseEntity<>(posts,HttpStatus.OK);
 	}
 	
 	@GetMapping("posts")
-	public ResponseEntity<List<PostDto>> getAllPost(){
-		List<PostDto>posts=postService.getAllPost();
+	public ResponseEntity<PostResponse> getAllPost(
+			@RequestParam(value="pageNumber",defaultValue = "0",required = false) Integer pageNumber,
+			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize
+			){
+		PostResponse posts=postService.getAllPost(pageNumber,pageSize);
 		
 		
-		return new ResponseEntity<List<PostDto>>(posts,HttpStatus.OK);
+		return new ResponseEntity<>(posts,HttpStatus.OK);
 				
 	}
 	@GetMapping("posts/{postId}")

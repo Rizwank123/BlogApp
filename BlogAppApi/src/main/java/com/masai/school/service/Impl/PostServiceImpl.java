@@ -7,7 +7,11 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.masai.school.Repositroy.CategoryRepo;
 import com.masai.school.Repositroy.PostRepo;
@@ -17,6 +21,7 @@ import com.masai.school.entities.Post;
 import com.masai.school.entities.User;
 import com.masai.school.exception.ResourceNotFoundException;
 import com.masai.school.payload.PostDto;
+import com.masai.school.payload.PostResponse;
 import com.masai.school.service.PostService;
 @Service
 public class PostServiceImpl implements PostService {
@@ -61,13 +66,26 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getAllPost() {
-		List<Post>posts=postRepo.findAll();
+	public PostResponse getAllPost(Integer pageNumber,Integer pageSize) {
+		
+		Pageable page=PageRequest.of(pageNumber, pageSize);
+		
+		Page<Post>pagePost=postRepo.findAll(page);
+		
+		List<Post>posts=pagePost.getContent();
 		List<PostDto> list = posts.stream()
 			    .map((p) -> modelmapper.map(p, PostDto.class))
 			    .collect(Collectors.toList());
+		PostResponse postResponse=new PostResponse();
+		postResponse.setContent(list);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setTotalpages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
 		
-		return list;
+		
+		return postResponse;
 	}
 
 	@Override
@@ -77,24 +95,47 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getPostByCategory(Integer categoryId) {
+	public PostResponse getPostByCategory(Integer categoryId,Integer pageNumber,Integer pageSize) {
 		Category cat=categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category", "categoryId", categoryId));
-		List<Post> posts=postRepo.findByCategory(cat);
+		
+		Pageable page= PageRequest.of( pageNumber, pageSize);
+		Page<Post> pagePost=postRepo.findByCategory(cat,page);
+		List<Post>posts=pagePost.getContent();
 		List<PostDto> list = posts.stream()
-			    .map((p) -> modelmapper.map(p, PostDto.class))
-			    .collect(Collectors.toList());
-		return list;
+				.map((p) -> modelmapper.map(p, PostDto.class))
+				.collect(Collectors.toList());
+		PostResponse postResponse=new PostResponse();
+		postResponse.setContent(list);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setTotalpages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		
+		
+		return postResponse;
 	}
 
 	@Override
-	public List<PostDto> getPostByUserId(Integer userId) {
+	public PostResponse getPostByUserId(Integer userId,Integer pageNumber,Integer pageSize) {
 		
 		User user=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User", "UserId", userId));
-		List<Post> posts=postRepo.findByUser(user);
+		Pageable page= PageRequest.of( pageNumber, pageSize);
+		Page<Post> pagePost=postRepo.findByUser(user,page);
+		List<Post>posts=pagePost.getContent();
 		List<PostDto> list = posts.stream()
 			    .map((p) -> modelmapper.map(p, PostDto.class))
 			    .collect(Collectors.toList());
-		return list;
+		
+		PostResponse postResponse=new PostResponse();
+		postResponse.setContent(list);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setTotalpages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		
+		return postResponse;
 		
 	}
 
