@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.masai.school.Repositroy.CategoryRepo;
 import com.masai.school.Repositroy.PostRepo;
@@ -23,6 +23,8 @@ import com.masai.school.exception.ResourceNotFoundException;
 import com.masai.school.payload.PostDto;
 import com.masai.school.payload.PostResponse;
 import com.masai.school.service.PostService;
+
+
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -66,9 +68,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostResponse getAllPost(Integer pageNumber,Integer pageSize) {
+	public PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy,String sortDir) {
 		
-		Pageable page=PageRequest.of(pageNumber, pageSize);
+		Sort sort=(sortDir.equalsIgnoreCase("asc"))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable page = PageRequest.of(pageNumber, pageSize,sort);
 		
 		Page<Post>pagePost=postRepo.findAll(page);
 		
@@ -141,8 +145,10 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<PostDto> searchPost(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+	List<Post>post=	postRepo.searchByTitle("%"+keyword+"%");
+	List<PostDto>postDto=post.stream().map((p)->modelmapper.map(p, PostDto.class)).collect(Collectors.toList());
+		
+		return postDto;
 	}
 
 }

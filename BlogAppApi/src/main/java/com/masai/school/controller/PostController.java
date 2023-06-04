@@ -41,6 +41,7 @@ public class PostController {
 	public ResponseEntity<PostResponse >getPostByUser(@PathVariable Integer userId,
 			@RequestParam(value="pageNumber", defaultValue = "0",required = false) Integer pageNumber,
 			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize
+			
 			){
 		PostResponse posts=postService.getPostByUserId(userId ,pageNumber,pageSize);
 		return new ResponseEntity<>(posts,HttpStatus.OK);
@@ -60,9 +61,11 @@ public class PostController {
 	@GetMapping("posts")
 	public ResponseEntity<PostResponse> getAllPost(
 			@RequestParam(value="pageNumber",defaultValue = "0",required = false) Integer pageNumber,
-			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize
+			@RequestParam(value="pageSize",defaultValue = "5",required = false) Integer pageSize,
+			@RequestParam(value="sortBy",defaultValue = "title",required = false) String sortBy,
+			@RequestParam(value="sortDir",defaultValue = "asc",required = false) String sortDir
 			){
-		PostResponse posts=postService.getAllPost(pageNumber,pageSize);
+		PostResponse posts=postService.getAllPost(pageNumber,pageSize,sortBy,sortDir);
 		
 		
 		return new ResponseEntity<>(posts,HttpStatus.OK);
@@ -84,6 +87,14 @@ public class PostController {
 		postService.deletePost(postId);
 		return new ResponseEntity<ApiResponse>(new ApiResponse("Post deleted Successfully",true),HttpStatus.OK);
 		
+	}
+	
+	@GetMapping("posts/search/{keywords}")
+	public ResponseEntity<List<PostDto>>SearchPost(@PathVariable String keywords){
+		
+		List<PostDto> post=postService.searchPost(keywords);
+		
+		return new ResponseEntity<>(post,HttpStatus.OK);
 	}
 
 }
