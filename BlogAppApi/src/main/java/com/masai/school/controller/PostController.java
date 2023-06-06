@@ -1,11 +1,15 @@
 package com.masai.school.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +28,7 @@ import com.masai.school.payload.PostResponse;
 import com.masai.school.service.FileService;
 import com.masai.school.service.PostService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 
@@ -112,16 +117,27 @@ public class PostController {
 	
 	
 	// image upload end-Point
-	@PostMapping("post/image/upload/{postId}")
-	public ResponseEntity<ImageResponse>uploadPostImage(@RequestParam ("image")MultipartFile image,@PathVariable Integer postId){
-		
-		String name=fileService.uploadImage(path, image);
+	@PostMapping("posts/image/upload/{postId}")
+	public ResponseEntity<PostDto>uploadPostImage(@RequestParam ("image")MultipartFile image,@PathVariable Integer postId) throws IOException{
 		
 		PostDto postDto=postService.getPostById(postId);
+		String name=fileService.uploadImage(path, image);
+		
 		postDto.setImageName(name);
 		PostDto updatePostDto =postService.updatePost(postDto, postId);
-		return new ResponseEntity<T>
+		return new ResponseEntity<PostDto>(updatePostDto,HttpStatus.ACCEPTED);
 		
+	}
+	// get image 
+	
+	@GetMapping(value="/posts/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
+	public void downloadImage(
+			@PathVariable("imageName") String imageName,
+			HttpServletResponse response
+			) throws IOException {
+		InputStream resource=fileService.getResource(path, imageName);
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		StreamUtils.copy(resource, response.getOutputStream());
 	}
 
 }
