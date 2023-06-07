@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.masai.school.payload.CommentDto;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,4 +43,4 @@ public class Post {
 	@OneToMany(mappedBy = "post",cascade = CascadeType.ALL )
 	private Set<Comment> commnets=new HashSet<>();
 
-}
+} 
