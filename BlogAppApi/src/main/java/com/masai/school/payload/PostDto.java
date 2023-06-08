@@ -22,3 +22,4 @@ public class PostDto {
 	private Set<CommentDto> comments=new HashSet<>();
 
 }
+//post dto 
