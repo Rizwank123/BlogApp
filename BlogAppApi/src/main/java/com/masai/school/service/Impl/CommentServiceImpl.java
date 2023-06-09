@@ -28,6 +28,7 @@ public class CommentServiceImpl implements CommentService {
 		
 		Comment cmnt=modelMapper.map(commentDto, Comment.class);
 		cmnt.setPost(post);
+		
 		Comment createdComment=commentRep.save(cmnt);
 		return modelMapper.map(createdComment, CommentDto.class);
 	}
