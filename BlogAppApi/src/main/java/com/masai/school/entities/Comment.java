@@ -1,10 +1,13 @@
 package com.masai.school.entities;
 
 import jakarta.persistence.Entity;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -25,5 +28,7 @@ public class Comment {
 	
 	 private Post post;
 	
+	 	@ManyToMany(mappedBy="comments")
+	 	 private List<User> users=new ArrayList<>();
 
 }
