@@ -19,7 +19,7 @@ import com.masai.school.payload.JwtAuthResponse;
 
 @RestController
 @RequestMapping("/api/auth/")
-public class AuthController {
+public class AuthController  {
 	
 	@Autowired
 	private JwtTokenHelper jwtTokenHelper;
@@ -31,11 +31,13 @@ public class AuthController {
 	private AuthenticationManager authenticationManager;
 	
 	@PostMapping("/login")
-	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest jwtRequest) throws Exception {
-		
+	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest jwtRequest)  {
+		System.out.println("hi.....");
 		this.authenticate(jwtRequest.getUsername(),jwtRequest.getPassword());
-		UserDetails userDetails=	this.userDetailService.loadUserByUsername(jwtRequest.getUsername());
 		
+		System.out.println("bye bye ...");
+		UserDetails userDetails=	this.userDetailService.loadUserByUsername(jwtRequest.getUsername());
+		System.out.println(jwtRequest.getUsername()+" "+jwtRequest.getPassword());
 		String token=this.jwtTokenHelper.generateToken(userDetails);
 		JwtAuthResponse response=new JwtAuthResponse();
 		response.setToken(token);
@@ -43,18 +45,22 @@ public class AuthController {
 		
 	}
 	
-	private void authenticate(String email,String password) throws Exception {
+	private void authenticate(String email,String password) throws BadCredentialsException {
 		
 		UsernamePasswordAuthenticationToken authenticationToken= new UsernamePasswordAuthenticationToken(email, password);
 		
 try {
 	this.authenticationManager.authenticate(authenticationToken);
+	
 
 }catch(BadCredentialsException ex) {
 	//System.out.println("Invalid username Or Password !!");
-	throw new BadCredentialsException("Invalid Username or Password");
+	//throw new BadCredentialsException("Invalid Username or Password");
+	throw ex;
 }
 		
 	}
+
+	
 
 }

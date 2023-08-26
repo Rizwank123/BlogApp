@@ -2,7 +2,6 @@ package com.masai.school.Security;
 
 import java.io.IOException;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter  extends OncePerRequestFilter{
 
 	@Autowired
-	private UserDetailsService userDetailService;
+	private  UserDetailsService userDetailService;
 	@Autowired
 	
 	private JwtTokenHelper jwtHelper;
@@ -33,7 +32,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter{
 		
 		String requstToken=request.getHeader("Authorization");
 	
-		System.out.println(requstToken);
+		//System.out.println(requstToken);
 		String username=null;
 		String token=null;
 		if(requstToken !=null && requstToken.startsWith("Bearer")) {
